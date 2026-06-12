@@ -1,0 +1,23 @@
+# Entorno virtual
+venv/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Base de datos local
+data/*.db
+data/*.db-shm
+data/*.db-wal
+
+# Secrets (nunca subir a GitHub)
+.streamlit/secrets.toml
+
+# Logs y exports
+logs/
+exports/
+
+# Windows
+Thumbs.db
+desktop.ini
