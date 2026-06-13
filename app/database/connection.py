@@ -17,6 +17,8 @@ logger = logging.getLogger(__name__)
 @st.cache_resource
 def _get_pool() -> psycopg2.pool.ThreadedConnectionPool:
     url = st.secrets["DATABASE_URL"]
+    if "sslmode" not in url:
+        url += "?sslmode=require"
     pool = psycopg2.pool.ThreadedConnectionPool(minconn=1, maxconn=5, dsn=url)
     logger.info("Pool PostgreSQL creado.")
     return pool
