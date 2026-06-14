@@ -81,6 +81,14 @@ def db_session():
         pool.putconn(raw)
 
 
+def _run_ddl(sql: str) -> None:
+    try:
+        with db_session() as conn:
+            conn.execute(sql)
+    except Exception as exc:
+        logger.warning("DDL omitido (ya existe o timeout): %s", exc)
+
+
 def init_db() -> None:
     with db_session() as conn:
         conn.execute("""
@@ -157,8 +165,8 @@ def init_db() -> None:
                 UNIQUE(nombre_archivo, carpeta)
             )
         """)
-        conn.execute("CREATE INDEX IF NOT EXISTS idx_prod_descripcion ON productos(descripcion)")
-        conn.execute("CREATE INDEX IF NOT EXISTS idx_prod_proveedor   ON productos(proveedor_id)")
-        conn.execute("CREATE INDEX IF NOT EXISTS idx_prod_codigo      ON productos(codigo_producto)")
-
     logger.info("Base de datos PostgreSQL inicializada.")
+
+    _run_ddl("CREATE INDEX IF NOT EXISTS idx_prod_descripcion ON productos(descripcion)")
+    _run_ddl("CREATE INDEX IF NOT EXISTS idx_prod_proveedor   ON productos(proveedor_id)")
+    _run_ddl("CREATE INDEX IF NOT EXISTS idx_prod_codigo      ON productos(codigo_producto)")
