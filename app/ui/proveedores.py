@@ -96,7 +96,7 @@ def render() -> None:
                     for arch in archivos:
                         col_a, col_b, col_c = st.columns([3, 1, 1])
                         with col_a:
-                            fecha = (arch["importado_at"] or "")[:16]
+                            fecha = str(arch["importado_at"] or "")[:16]
                             st.markdown(
                                 f'<span style="color:#1A1D2E">📄 **{arch["nombre_archivo"]}**</span>'
                                 f'<span style="color:#6B7399; font-size:0.8rem; margin-left:12px">{fecha}</span>',

@@ -129,7 +129,7 @@ def listar_archivos(carpeta: Path) -> list[dict]:
             "mtime":         mtime,
             "size_kb":       round(stat.st_size / 1024, 1),
             "estado":        estado,
-            "ultimo_import": (ultimo_import or "")[:16],
+            "ultimo_import": str(ultimo_import or "")[:16],
             "ultimo_prov":   ultimo_prov or "",
         })
 
