@@ -56,6 +56,14 @@ class _Conn:
         cur.execute(sql, params)
         return _Cursor(cur)
 
+    def execute_batch(self, sql: str, values: list) -> None:
+        cur = self._conn.cursor()
+        psycopg2.extras.execute_batch(cur, sql, values, page_size=200)
+
+    def execute_values(self, sql: str, values: list) -> None:
+        cur = self._conn.cursor()
+        psycopg2.extras.execute_values(cur, sql, values, page_size=200)
+
 
 @contextmanager
 def db_session():

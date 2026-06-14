@@ -37,50 +37,63 @@ def insertar_lote(
 ) -> tuple[int, int]:
     insertados = actualizados = 0
 
+    # 1 sola consulta para traer todos los productos existentes del proveedor
     with db_session() as conn:
-        for p in productos:
-            codigo = (p.get("codigo_producto") or "").strip() or None
-            desc = (p.get("descripcion") or "").strip()
-            precio = float(p.get("precio_lista", 0))
-            empaque = (p.get("empaque") or "").strip() or None
+        rows = conn.execute(
+            "SELECT id, codigo_producto, descripcion, precio_lista FROM productos WHERE proveedor_id=%s",
+            (proveedor_id,),
+        ).fetchall()
 
-            if not desc or precio <= 0:
-                continue
+    by_codigo = {r["codigo_producto"]: dict(r) for r in rows if r["codigo_producto"]}
+    by_desc   = {r["descripcion"]: dict(r) for r in rows}
 
-            if codigo:
-                existing = conn.execute(
-                    "SELECT id, precio_lista FROM productos WHERE codigo_producto=%s AND proveedor_id=%s",
-                    (codigo, proveedor_id),
-                ).fetchone()
-            else:
-                existing = conn.execute(
-                    "SELECT id, precio_lista FROM productos WHERE descripcion=%s AND proveedor_id=%s",
-                    (desc, proveedor_id),
-                ).fetchone()
+    to_insert    = []
+    to_update    = []
+    to_historial = []
 
-            if existing:
-                if registrar_historial and existing["precio_lista"] != precio:
-                    conn.execute(
-                        """INSERT INTO historial_precios
-                           (producto_id, precio_lista_anterior, precio_lista_nuevo, motivo)
-                           VALUES (%s, %s, %s, 'importacion')""",
-                        (existing["id"], existing["precio_lista"], precio),
-                    )
-                conn.execute(
-                    """UPDATE productos
-                       SET descripcion=%s, precio_lista=%s, empaque=%s, updated_at=CURRENT_TIMESTAMP
-                       WHERE id=%s""",
-                    (desc, precio, empaque, existing["id"]),
-                )
-                actualizados += 1
-            else:
-                conn.execute(
-                    """INSERT INTO productos
-                       (codigo_producto, descripcion, precio_lista, empaque, proveedor_id, archivo_origen_id)
-                       VALUES (%s, %s, %s, %s, %s, %s)""",
-                    (codigo, desc, precio, empaque, proveedor_id, archivo_id),
-                )
-                insertados += 1
+    for p in productos:
+        codigo  = (p.get("codigo_producto") or "").strip() or None
+        desc    = (p.get("descripcion") or "").strip()
+        precio  = float(p.get("precio_lista", 0))
+        empaque = (p.get("empaque") or "").strip() or None
+
+        if not desc or precio <= 0:
+            continue
+
+        existing = by_codigo.get(codigo) if codigo else by_desc.get(desc)
+
+        if existing:
+            if registrar_historial and existing["precio_lista"] != precio:
+                to_historial.append((existing["id"], existing["precio_lista"], precio))
+            to_update.append((desc, precio, empaque, existing["id"]))
+            actualizados += 1
+        else:
+            to_insert.append((codigo, desc, precio, empaque, proveedor_id, archivo_id))
+            insertados += 1
+
+    # Todas las escrituras en 1 sola transacción con operaciones batch
+    with db_session() as conn:
+        if to_historial:
+            conn.execute_batch(
+                """INSERT INTO historial_precios
+                   (producto_id, precio_lista_anterior, precio_lista_nuevo, motivo)
+                   VALUES (%s, %s, %s, 'importacion')""",
+                to_historial,
+            )
+        if to_update:
+            conn.execute_batch(
+                """UPDATE productos
+                   SET descripcion=%s, precio_lista=%s, empaque=%s, updated_at=CURRENT_TIMESTAMP
+                   WHERE id=%s""",
+                to_update,
+            )
+        if to_insert:
+            conn.execute_values(
+                """INSERT INTO productos
+                   (codigo_producto, descripcion, precio_lista, empaque, proveedor_id, archivo_origen_id)
+                   VALUES %s""",
+                to_insert,
+            )
 
     logger.info("Lote guardado — insertados: %d, actualizados: %d", insertados, actualizados)
     return insertados, actualizados
