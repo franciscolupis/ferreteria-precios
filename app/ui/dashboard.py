@@ -21,7 +21,9 @@ def render() -> None:
     with col3:
         stat_card(fmt_moneda(stats["precio_promedio"]), "Precio lista promedio")
     with col4:
-        ultima = stats["ultima_actualizacion"] or "—"
-        if ultima and ultima != "—":
-            ultima = ultima[:10]
+        ultima = stats["ultima_actualizacion"]
+        if ultima:
+            ultima = str(ultima)[:10]
+        else:
+            ultima = "—"
         stat_card(ultima, "Última actualización")
