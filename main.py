@@ -24,12 +24,8 @@ st.set_page_config(
 inject_css()
 
 # ── Header con logo ───────────────────────────────────────────────────────────
-st.markdown("""
-<div style="background:#1A1D2E; border-bottom:3px solid #E8A020;
-            border-radius:8px; padding:10px 24px; margin-bottom:16px;">
-""", unsafe_allow_html=True)
-st.image(str(Path(__file__).parent / "assets" / "logo.png"), width=280)
-st.markdown("</div>", unsafe_allow_html=True)
+st.image(str(Path(__file__).parent / "assets" / "logo.png"), width=300)
+st.markdown('<hr style="margin:0 0 16px 0; border:none; border-top:2px solid #E4E6EB">', unsafe_allow_html=True)
 
 # ── Buscador full-width estilo Bremen ─────────────────────────────────────────
 st.markdown("""
