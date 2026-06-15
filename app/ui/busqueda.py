@@ -1,5 +1,4 @@
 import streamlit as st
-import pandas as pd
 from app.services import producto_service, precio_service, exportador, proveedor_service
 from app.ui.components import tarjeta_precio, notif_err, notif_warn, seccion
 from app.utils.formatters import fmt_moneda
@@ -58,47 +57,68 @@ def render() -> None:
         notif_warn(f'Sin resultados para "{termino}".')
         return
 
-    # ── Encabezado de tabla (estilo Bremen) ───────────────────────────────────
-    st.markdown(
-        '<div class="bremtable-header">'
-        "<span>Descripción</span>"
-        "<span>Precio Lista</span>"
-        "<span>Costo + IVA</span>"
-        "<span>Precio Venta</span>"
-        "<span>Empaque / Ganancia</span>"
-        "</div>",
-        unsafe_allow_html=True,
-    )
+    # ── CSS para filas clicables ──────────────────────────────────────────────
+    st.markdown("""
+    <style>
+    div[data-testid="stHorizontalBlock"] button[kind="secondary"] {
+        background: transparent !important;
+        border: none !important;
+        border-radius: 0 !important;
+        text-align: left !important;
+        padding: 8px 6px !important;
+        font-size: 0.84rem !important;
+        color: #1A1D2E !important;
+        box-shadow: none !important;
+        border-bottom: 1px solid #F0F1F5 !important;
+    }
+    div[data-testid="stHorizontalBlock"] button[kind="secondary"]:hover {
+        background: #FFF3EE !important;
+        color: #FF6B35 !important;
+    }
+    div[data-testid="stHorizontalBlock"] button[kind="primary"] {
+        background: #FFF3EE !important;
+        border: none !important;
+        border-left: 3px solid #FF6B35 !important;
+        border-radius: 0 !important;
+        text-align: left !important;
+        padding: 8px 6px !important;
+        font-size: 0.84rem !important;
+        color: #FF6B35 !important;
+        box-shadow: none !important;
+        border-bottom: 1px solid #F0F1F5 !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
 
-    # ── Tabla de resultados con selección ─────────────────────────────────────
-    df = pd.DataFrame([
-        {
-            "Código":        r.get("codigo_producto") or "",
-            "Descripción":   r["descripcion"],
-            "Proveedor":     r["proveedor"],
-            "Precio lista":  r["precio_lista"],
-            "_id":           r["id"],
-        }
-        for r in resultados
-    ])
+    # ── Encabezado de tabla ───────────────────────────────────────────────────
+    h1, h2, h3, h4 = st.columns([4, 2, 1.5, 1.5])
+    hdr = '<span style="font-size:0.72rem;font-weight:700;color:#6B7399;text-transform:uppercase">{}</span>'
+    h1.markdown(hdr.format("Descripción"), unsafe_allow_html=True)
+    h2.markdown(hdr.format("Proveedor"), unsafe_allow_html=True)
+    h3.markdown(hdr.format("Código"), unsafe_allow_html=True)
+    h4.markdown(hdr.format("Precio Lista"), unsafe_allow_html=True)
+    st.markdown('<div style="border-bottom:2px solid #E4E6EB;margin:2px 0 4px"></div>', unsafe_allow_html=True)
 
-    evento = st.dataframe(
-        df[["Código", "Descripción", "Proveedor", "Precio lista"]],
-        use_container_width=True,
-        hide_index=True,
-        on_select="rerun",
-        selection_mode="single-row",
-        column_config={
-            "Precio lista": st.column_config.NumberColumn(format="$ %,.2f"),
-        },
-    )
+    # ── Filas clicables ───────────────────────────────────────────────────────
+    sel_idx = st.session_state.get("prod_sel_idx")
+
+    for i, r in enumerate(resultados):
+        es_sel = (sel_idx == i)
+        tipo   = "primary" if es_sel else "secondary"
+        c1, c2, c3, c4 = st.columns([4, 2, 1.5, 1.5])
+        cl1 = c1.button(r["descripcion"],                         key=f"r{i}a", use_container_width=True, type=tipo)
+        cl2 = c2.button(r["proveedor"],                           key=f"r{i}b", use_container_width=True, type=tipo)
+        cl3 = c3.button(r.get("codigo_producto") or "—",         key=f"r{i}c", use_container_width=True, type=tipo)
+        cl4 = c4.button(f"$ {r['precio_lista']:,.2f}",           key=f"r{i}d", use_container_width=True, type=tipo)
+        if cl1 or cl2 or cl3 or cl4:
+            st.session_state["prod_sel_idx"] = i
+            st.rerun()
 
     # ── Detalle del producto seleccionado ─────────────────────────────────────
-    filas_sel = evento.selection.get("rows", []) if hasattr(evento, "selection") else []
-    if not filas_sel:
+    if sel_idx is None or sel_idx >= len(resultados):
         return
 
-    idx = filas_sel[0]
+    idx = sel_idx
     r   = resultados[idx]
 
     if r["descuento_pct"] is None:
