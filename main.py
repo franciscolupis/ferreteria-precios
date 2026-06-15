@@ -1,8 +1,15 @@
+import base64
+from pathlib import Path
 import streamlit as st
 from app.utils.logger import setup_logging
 from app.database.connection import init_db
 from app.ui.components import inject_css
 from app.ui import busqueda, dashboard, proveedores, reglas, importar
+
+
+def _logo_b64() -> str:
+    logo = Path(__file__).parent / "assets" / "logo.png"
+    return base64.b64encode(logo.read_bytes()).decode()
 
 setup_logging()
 init_db()
@@ -16,41 +23,35 @@ st.set_page_config(
 
 inject_css()
 
-# ── Header estilo Bremen ──────────────────────────────────────────────────────
-st.markdown("""
+# ── Header con logo ───────────────────────────────────────────────────────────
+_logo = _logo_b64()
+st.markdown(f"""
 <style>
-  /* Barra superior fija estilo Bremen */
-  .bremen-topbar {
+  .furlan-topbar {{
     display: flex;
     align-items: center;
-    gap: 0;
-    background: #FFFFFF;
-    border-bottom: 1px solid #E4E6EB;
-    padding: 10px 24px;
+    background: #1A1D2E;
+    padding: 10px 28px;
     margin: -0.5rem -1rem 20px;
     position: sticky;
     top: 0;
     z-index: 99;
-  }
-  .bremen-logo {
-    width: 36px; height: 36px;
-    background: linear-gradient(135deg,#FF6B35,#C04A1A);
-    border-radius: 8px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.2rem; font-weight: 900; color: white;
-    margin-right: 20px; flex-shrink: 0;
-  }
-  .bremen-title {
-    font-size: 1.15rem;
-    font-weight: 800;
-    color: #1A1D2E;
-    margin-right: auto;
-  }
+    border-bottom: 3px solid #E8A020;
+  }}
+  .furlan-topbar img {{
+    height: 48px;
+    object-fit: contain;
+  }}
+  .furlan-topbar-sub {{
+    margin-left: auto;
+    font-size: 0.78rem;
+    color: #8A8FA8;
+    letter-spacing: 0.05em;
+  }}
 </style>
-<div class="bremen-topbar">
-  <div class="bremen-logo">🔩</div>
-  <div class="bremen-title">Productos</div>
-  <div style="font-size:0.8rem; color:#8A8FA8">Gestión de Precios</div>
+<div class="furlan-topbar">
+  <img src="data:image/png;base64,{_logo}" alt="Ferretera Furlan">
+  <span class="furlan-topbar-sub">Gestión de Precios</span>
 </div>
 """, unsafe_allow_html=True)
 
