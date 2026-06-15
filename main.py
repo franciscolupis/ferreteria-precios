@@ -23,9 +23,20 @@ st.set_page_config(
 
 inject_css()
 
-# ── Header con logo ───────────────────────────────────────────────────────────
+# ── Ocultar barra de Streamlit y mostrar logo propio ─────────────────────────
+st.markdown("""
+<style>
+  header[data-testid="stHeader"]       { display: none !important; }
+  #MainMenu                            { display: none !important; }
+  [data-testid="stToolbar"]            { display: none !important; }
+  .stDeployButton                      { display: none !important; }
+  section[data-testid="stSidebar"]     { display: none !important; }
+  .block-container { padding-top: 1rem !important; }
+</style>
+""", unsafe_allow_html=True)
+
 st.image(str(Path(__file__).parent / "assets" / "logo.png"), width=300)
-st.markdown('<hr style="margin:0 0 16px 0; border:none; border-top:2px solid #E4E6EB">', unsafe_allow_html=True)
+st.markdown('<hr style="margin:4px 0 16px 0; border:none; border-top:2px solid #E4E6EB">', unsafe_allow_html=True)
 
 # ── Buscador full-width estilo Bremen ─────────────────────────────────────────
 st.markdown("""
