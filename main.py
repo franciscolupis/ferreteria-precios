@@ -31,15 +31,13 @@ st.markdown(f"""
     display: flex;
     align-items: center;
     background: #1A1D2E;
-    padding: 10px 28px;
-    margin: -0.5rem -1rem 20px;
-    position: sticky;
-    top: 0;
-    z-index: 99;
+    padding: 12px 28px;
+    margin: 0 0 20px 0;
     border-bottom: 3px solid #E8A020;
+    border-radius: 8px;
   }}
   .furlan-topbar img {{
-    height: 48px;
+    height: 44px;
     object-fit: contain;
   }}
   .furlan-topbar-sub {{
