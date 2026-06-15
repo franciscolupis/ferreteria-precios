@@ -24,34 +24,12 @@ st.set_page_config(
 inject_css()
 
 # ── Header con logo ───────────────────────────────────────────────────────────
-_logo = _logo_b64()
-st.markdown(f"""
-<style>
-  .furlan-topbar {{
-    display: flex;
-    align-items: center;
-    background: #1A1D2E;
-    padding: 12px 28px;
-    margin: 0 0 20px 0;
-    border-bottom: 3px solid #E8A020;
-    border-radius: 8px;
-  }}
-  .furlan-topbar img {{
-    height: 44px;
-    object-fit: contain;
-  }}
-  .furlan-topbar-sub {{
-    margin-left: auto;
-    font-size: 0.78rem;
-    color: #8A8FA8;
-    letter-spacing: 0.05em;
-  }}
-</style>
-<div class="furlan-topbar">
-  <img src="data:image/png;base64,{_logo}" alt="Ferretera Furlan">
-  <span class="furlan-topbar-sub">Gestión de Precios</span>
-</div>
+st.markdown("""
+<div style="background:#1A1D2E; border-bottom:3px solid #E8A020;
+            border-radius:8px; padding:10px 24px; margin-bottom:16px;">
 """, unsafe_allow_html=True)
+st.image(str(Path(__file__).parent / "assets" / "logo.png"), width=280)
+st.markdown("</div>", unsafe_allow_html=True)
 
 # ── Buscador full-width estilo Bremen ─────────────────────────────────────────
 st.markdown("""
