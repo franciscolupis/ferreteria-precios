@@ -35,7 +35,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-st.image(str(Path(__file__).parent / "assets" / "logo.png"), width=300)
+st.image(str(Path(__file__).parent / "assets" / "logo.png"), width=420)
 st.markdown('<hr style="margin:4px 0 16px 0; border:none; border-top:2px solid #E4E6EB">', unsafe_allow_html=True)
 
 # ── Buscador full-width estilo Bremen ─────────────────────────────────────────
