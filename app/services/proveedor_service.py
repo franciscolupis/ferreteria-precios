@@ -59,12 +59,12 @@ def obtener_reglas(prov_id: int) -> Optional[dict]:
 def guardar_archivo(prov_id: int, nombre: str, contenido: bytes, mime_type: str) -> int:
     with db_session() as conn:
         cur = conn.execute(
-            "INSERT INTO archivos_importados (proveedor_id, nombre_archivo, contenido, mime_type) "
-            "VALUES (%s, %s, %s, %s) RETURNING id",
-            (prov_id, nombre, contenido, mime_type),
+            "INSERT INTO archivos_importados (proveedor_id, nombre_archivo, mime_type) "
+            "VALUES (%s, %s, %s) RETURNING id",
+            (prov_id, nombre, mime_type),
         )
         archivo_id = cur.lastrowid
-        logger.info("Archivo guardado para proveedor id=%d: %s (archivo_id=%d)", prov_id, nombre, archivo_id)
+        logger.info("Archivo registrado para proveedor id=%d: %s (archivo_id=%d)", prov_id, nombre, archivo_id)
         return archivo_id
 
 
@@ -87,15 +87,6 @@ def listar_archivos(prov_id: int) -> list[dict]:
             (prov_id,),
         ).fetchall()
         return [dict(r) for r in rows]
-
-
-def obtener_archivo(archivo_id: int) -> dict | None:
-    with db_session() as conn:
-        row = conn.execute(
-            "SELECT nombre_archivo, contenido, mime_type FROM archivos_importados WHERE id=%s",
-            (archivo_id,),
-        ).fetchone()
-        return dict(row) if row else None
 
 
 def guardar_mapeo(prov_id: int, col_codigo: str, col_desc: str, col_precio: str, col_empaque: str) -> None:

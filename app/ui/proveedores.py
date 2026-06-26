@@ -94,7 +94,7 @@ def render() -> None:
                         continue
 
                     for arch in archivos:
-                        col_a, col_b, col_c = st.columns([3, 1, 1])
+                        col_a, col_b = st.columns([4, 1])
                         with col_a:
                             fecha = str(arch["importado_at"] or "")[:16]
                             st.markdown(
@@ -103,20 +103,6 @@ def render() -> None:
                                 unsafe_allow_html=True,
                             )
                         with col_b:
-                            try:
-                                detalle = proveedor_service.obtener_archivo(arch["id"])
-                                if detalle:
-                                    st.download_button(
-                                        "⬇ Descargar",
-                                        data=bytes(detalle["contenido"]),
-                                        file_name=detalle["nombre_archivo"],
-                                        mime=detalle["mime_type"] or "application/octet-stream",
-                                        key=f"dl_{arch['id']}",
-                                        use_container_width=True,
-                                    )
-                            except Exception as exc:
-                                notif_err(f"Error: {exc}")
-                        with col_c:
                             if st.button(
                                 "🗑 Eliminar",
                                 key=f"del_arch_{arch['id']}",

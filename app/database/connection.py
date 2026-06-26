@@ -121,7 +121,6 @@ def init_db() -> None:
                 proveedor_id    INTEGER NOT NULL
                                 REFERENCES proveedores(id) ON DELETE CASCADE,
                 nombre_archivo  TEXT NOT NULL,
-                contenido       BYTEA NOT NULL,
                 mime_type       TEXT,
                 importado_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
