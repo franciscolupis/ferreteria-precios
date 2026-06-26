@@ -65,8 +65,8 @@ def render() -> None:
         border: none !important;
         border-radius: 0 !important;
         text-align: left !important;
-        padding: 8px 6px !important;
-        font-size: 0.84rem !important;
+        padding: 10px 6px !important;
+        font-size: 0.97rem !important;
         color: #1A1D2E !important;
         box-shadow: none !important;
         border-bottom: 1px solid #F0F1F5 !important;
@@ -81,22 +81,32 @@ def render() -> None:
         border-left: 3px solid #FF6B35 !important;
         border-radius: 0 !important;
         text-align: left !important;
-        padding: 8px 6px !important;
-        font-size: 0.84rem !important;
+        padding: 10px 6px !important;
+        font-size: 0.97rem !important;
         color: #FF6B35 !important;
         box-shadow: none !important;
         border-bottom: 1px solid #F0F1F5 !important;
+    }
+    div[data-testid="stHorizontalBlock"] div[data-testid="column"]:last-child button[kind="secondary"] {
+        color: #1E9E55 !important;
+        font-weight: 800 !important;
+        font-size: 1.05rem !important;
+    }
+    div[data-testid="stHorizontalBlock"] div[data-testid="column"]:last-child button[kind="primary"] {
+        color: #1E9E55 !important;
+        font-weight: 800 !important;
+        font-size: 1.05rem !important;
     }
     </style>
     """, unsafe_allow_html=True)
 
     # ── Encabezado de tabla ───────────────────────────────────────────────────
     h1, h2, h3, h4 = st.columns([4, 2, 1.5, 1.5])
-    hdr = '<span style="font-size:0.72rem;font-weight:700;color:#6B7399;text-transform:uppercase">{}</span>'
+    hdr = '<span style="font-size:0.78rem;font-weight:700;color:#6B7399;text-transform:uppercase">{}</span>'
     h1.markdown(hdr.format("Descripción"), unsafe_allow_html=True)
     h2.markdown(hdr.format("Proveedor"), unsafe_allow_html=True)
     h3.markdown(hdr.format("Código"), unsafe_allow_html=True)
-    h4.markdown(hdr.format("Precio Lista"), unsafe_allow_html=True)
+    h4.markdown('<span style="font-size:0.78rem;font-weight:700;color:#1E9E55;text-transform:uppercase">Precio Venta</span>', unsafe_allow_html=True)
     st.markdown('<div style="border-bottom:2px solid #E4E6EB;margin:2px 0 4px"></div>', unsafe_allow_html=True)
 
     # ── Filas clicables ───────────────────────────────────────────────────────
@@ -105,11 +115,18 @@ def render() -> None:
     for i, r in enumerate(resultados):
         es_sel = (sel_idx == i)
         tipo   = "primary" if es_sel else "secondary"
+
+        if r["descuento_pct"] is not None:
+            d = precio_service.calcular(r["precio_lista"], r["descuento_pct"], r["iva_pct"], r["ganancia_pct"])
+            precio_col = fmt_moneda(d.precio_venta)
+        else:
+            precio_col = "Sin reglas"
+
         c1, c2, c3, c4 = st.columns([4, 2, 1.5, 1.5])
-        cl1 = c1.button(r["descripcion"],                         key=f"r{i}a", use_container_width=True, type=tipo)
-        cl2 = c2.button(r["proveedor"],                           key=f"r{i}b", use_container_width=True, type=tipo)
-        cl3 = c3.button(r.get("codigo_producto") or "—",         key=f"r{i}c", use_container_width=True, type=tipo)
-        cl4 = c4.button(f"$ {r['precio_lista']:,.2f}",           key=f"r{i}d", use_container_width=True, type=tipo)
+        cl1 = c1.button(r["descripcion"],                     key=f"r{i}a", use_container_width=True, type=tipo)
+        cl2 = c2.button(r["proveedor"],                       key=f"r{i}b", use_container_width=True, type=tipo)
+        cl3 = c3.button(r.get("codigo_producto") or "—",     key=f"r{i}c", use_container_width=True, type=tipo)
+        cl4 = c4.button(precio_col,                           key=f"r{i}d", use_container_width=True, type=tipo)
         if cl1 or cl2 or cl3 or cl4:
             st.session_state["prod_sel_idx"] = i
             st.rerun()

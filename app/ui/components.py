@@ -102,39 +102,42 @@ input:focus { border-color: #FF6B35 !important;
     margin-bottom: 3px;
 }
 .product-description {
-    font-size: 0.9rem;
-    font-weight: 600;
+    font-size: 1.05rem;
+    font-weight: 700;
     color: #1A1D2E;
     line-height: 1.3;
 }
 .product-code {
-    font-size: 0.75rem;
+    font-size: 0.82rem;
     color: #8A8FA8;
     margin-top: 2px;
 }
 .product-price {
-    font-size: 1rem;
+    font-size: 1.15rem;
     font-weight: 700;
     color: #1A1D2E;
 }
 .product-price-venta {
-    font-size: 1.1rem;
+    font-size: 1.7rem;
     font-weight: 800;
     color: #1E9E55;
+    line-height: 1.1;
 }
 .product-empaque {
     display: inline-block;
-    background: #F0F2F8;
-    color: #5A6080;
+    background: #FF6B35;
+    color: #FFFFFF;
     border-radius: 20px;
-    padding: 3px 10px;
-    font-size: 0.75rem;
-    font-weight: 600;
+    padding: 5px 14px;
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: 0.5px;
 }
 .product-ganancia {
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     font-weight: 700;
     color: #E74C3C;
+    margin-top: 6px;
 }
 
 /* ── Desglose expandido ──────────────────────────────────────────────── */
@@ -273,8 +276,8 @@ def tarjeta_precio(
           <div class="product-price">{fmt_moneda(desglose.costo_con_iva)}</div>
         </div>
 
-        <div>
-          <div class="product-col-label">Precio Venta</div>
+        <div style="background:#EBF9F1;border:2px solid #1E9E55;border-radius:10px;padding:10px 14px">
+          <div class="product-col-label" style="color:#1E9E55">Precio Venta</div>
           <div class="product-price-venta">{fmt_moneda(desglose.precio_venta)}</div>
         </div>
 
@@ -314,9 +317,9 @@ def tarjeta_precio(
             <div class="flow-arrow">&#8594;</div>
             <div class="flow-op">+{fmt_pct(desglose.ganancia_pct)}<br>+{fmt_moneda(desglose.ganancia_neta)}</div>
           </div>
-          <div class="flow-step" style="border-color:#1E9E55">
-            <div class="flow-step-label">Precio Venta</div>
-            <div class="flow-step-value verde">{fmt_moneda(desglose.precio_venta)}</div>
+          <div class="flow-step" style="border-color:#1E9E55;border-width:2px;background:#EBF9F1">
+            <div class="flow-step-label" style="color:#1E9E55">Precio Venta</div>
+            <div class="flow-step-value verde" style="font-size:1.15rem">{fmt_moneda(desglose.precio_venta)}</div>
           </div>
         </div>
       </div>
