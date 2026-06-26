@@ -284,9 +284,6 @@ def tarjeta_precio(
         <div>
           <div class="product-col-label">Empaque</div>
           <span class="product-empaque">{empaque_label}</span>
-          <div class="product-ganancia" style="margin-top:6px">
-            {fmt_moneda(desglose.ganancia_neta)} · {fmt_pct(desglose.ganancia_neta_pct)}
-          </div>
         </div>
 
       </div>
